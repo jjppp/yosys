@@ -608,7 +608,7 @@ endif
 endif
 
 kernel/log.o: CXXFLAGS += -DYOSYS_SRC='"$(YOSYS_SRC)"'
-kernel/yosys.o: CXXFLAGS += -DYOSYS_DATDIR='"$(DATDIR)"' -DYOSYS_PROGRAM_PREFIX='"$(PROGRAM_PREFIX)"'
+kernel/yosys.o: CXXFLAGS += -DYOSYS_PROGRAM_PREFIX='"$(PROGRAM_PREFIX)"'
 ifeq ($(ENABLE_ABC),1)
 ifneq ($(ABCEXTERNAL),)
 kernel/yosys.o: CXXFLAGS += -DABCEXTERNAL='"$(ABCEXTERNAL)"'
