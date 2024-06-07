@@ -288,7 +288,7 @@ struct FsmDetectPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
-		Timer timer(__PRETTY_FUNCTION__);
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing FSM_DETECT pass (finding FSMs in design).\n");
 
 		bool ignore_self_reset = false;
