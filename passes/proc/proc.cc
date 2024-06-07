@@ -19,6 +19,7 @@
 
 #include "kernel/register.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -72,6 +73,7 @@ struct ProcPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		std::string global_arst;
 		bool ifxmode = false;
 		bool nomux = false;
@@ -129,6 +131,7 @@ struct ProcPass : public Pass {
 			Pass::call(design, "opt_expr -keepdc");
 
 		log_pop();
+		timer.tick();
 	}
 } ProcPass;
 
