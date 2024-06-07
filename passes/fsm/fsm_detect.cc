@@ -22,6 +22,7 @@
 #include "kernel/sigtools.h"
 #include "kernel/consteval.h"
 #include "kernel/celltypes.h"
+#include "kernel/Timer.h"
 #include "fsmdata.h"
 
 USING_YOSYS_NAMESPACE
@@ -287,6 +288,7 @@ struct FsmDetectPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing FSM_DETECT pass (finding FSMs in design).\n");
 
 		bool ignore_self_reset = false;
@@ -343,6 +345,7 @@ struct FsmDetectPass : public Pass {
 		sig2driver.clear();
 		sig2user.clear();
 		muxtree_cells.clear();
+		timer.tick();
 	}
 } FsmDetectPass;
 
