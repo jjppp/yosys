@@ -25,6 +25,7 @@
 #include "kernel/celltypes.h"
 #include "kernel/sigtools.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -294,6 +295,7 @@ struct SccPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		dict<std::string, std::string> setAttr;
 		bool allCellTypes = false;
 		bool selectMode = false;
@@ -391,6 +393,7 @@ struct SccPass : public Pass {
 			design->selection_stack[origSelectPos] = newSelection;
 			design->selection_stack[origSelectPos].optimize(design);
 		}
+		timer.tick();
 	}
 } SccPass;
 
