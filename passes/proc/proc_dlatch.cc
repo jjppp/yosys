@@ -22,6 +22,7 @@
 #include "kernel/ffinit.h"
 #include "kernel/consteval.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -460,6 +461,7 @@ struct ProcDlatchPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing PROC_DLATCH pass (convert process syncs to latches).\n");
 
 		extra_args(args, 1, design);
@@ -471,6 +473,7 @@ struct ProcDlatchPass : public Pass {
 					proc_dlatch(db, proc_it.second);
 			db.fixup_muxes();
 		}
+		timer.tick();
 	}
 } ProcDlatchPass;
 

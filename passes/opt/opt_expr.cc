@@ -22,6 +22,7 @@
 #include "kernel/celltypes.h"
 #include "kernel/utils.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>
@@ -2259,6 +2260,7 @@ struct OptExprPass : public Pass {
 		bool do_fine = false;
 		bool keepdc = false;
 
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing OPT_EXPR pass (perform const folding).\n");
 		log_push();
 
@@ -2333,6 +2335,7 @@ struct OptExprPass : public Pass {
 		}
 
 		log_pop();
+		timer.tick();
 	}
 } OptExprPass;
 
