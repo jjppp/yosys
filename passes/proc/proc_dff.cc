@@ -21,6 +21,7 @@
 #include "kernel/sigtools.h"
 #include "kernel/consteval.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -361,6 +362,7 @@ struct ProcDffPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing PROC_DFF pass (convert process syncs to FFs).\n");
 
 		extra_args(args, 1, design);
@@ -372,6 +374,7 @@ struct ProcDffPass : public Pass {
 					if (design->selected(mod, proc_it.second))
 						proc_dff(mod, proc_it.second, ce);
 			}
+		timer.tick();
 	}
 } ProcDffPass;
 

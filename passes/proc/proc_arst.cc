@@ -20,6 +20,7 @@
 #include "kernel/register.h"
 #include "kernel/sigtools.h"
 #include "kernel/log.h"
+#include "kernel/Timer.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -265,6 +266,7 @@ struct ProcArstPass : public Pass {
 	}
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		std::string global_arst;
 		bool global_arst_neg = false;
 
@@ -328,6 +330,7 @@ struct ProcArstPass : public Pass {
 
 		for (auto wire : delete_initattr_wires)
 			wire->attributes.erase(ID::init);
+		timer.tick();
 	}
 } ProcArstPass;
 
