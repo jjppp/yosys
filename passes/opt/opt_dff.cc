@@ -265,7 +265,7 @@ struct OptDffWorker
 	bool run() {
         // Collect all SRST signals
         pool<RTLIL::SigSpec> sync_resets{};
-        
+
 		// We have all the information we need, and the list of FFs to process as well.  Do it.
 		bool did_something = false;
 		while (!dff_cells.empty()) {
@@ -657,6 +657,9 @@ struct OptDffWorker
 
 						log("Adding SRST signal on %s (%s) from module %s (D = %s, Q = %s, rval = %s).\n",
 								log_id(cell), log_id(cell->type), log_id(module), log_signal(new_ff.sig_d), log_signal(new_ff.sig_q), log_signal(new_ff.val_srst));
+						if (qihe::ENABLE_SRST_VALUE) {
+							log("SRSTVAL %s.%s %s\n", module->name.c_str(), log_signal(new_ff.sig_q), log_signal(new_ff.val_srst));
+						}
 					}
 
 					if (remaining_indices.empty()) {
