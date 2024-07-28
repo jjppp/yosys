@@ -18,6 +18,7 @@
  *
  */
 
+#include "kernel/Timer.h"
 #include "kernel/log.h"
 #include "kernel/qihe.h"
 #include "kernel/register.h"
@@ -658,7 +659,7 @@ struct OptDffWorker
 						log("Adding SRST signal on %s (%s) from module %s (D = %s, Q = %s, rval = %s).\n",
 								log_id(cell), log_id(cell->type), log_id(module), log_signal(new_ff.sig_d), log_signal(new_ff.sig_q), log_signal(new_ff.val_srst));
 						if (qihe::ENABLE_SRST_VALUE) {
-							log("SRSTVAL %s.%s %s\n", module->name.c_str(), log_signal(new_ff.sig_q), log_signal(new_ff.val_srst));
+							log("SRSTVAL %s.%s %s\n", module->name.c_str(), log_signal(new_ff.sig_q), log_signal(new_ff.val_srst, false));
 						}
 					}
 
@@ -904,6 +905,7 @@ struct OptDffPass : public Pass {
 
 	void execute(std::vector<std::string> args, RTLIL::Design *design) override
 	{
+		qihe::Timer timer(__PRETTY_FUNCTION__);
 		log_header(design, "Executing OPT_DFF pass (perform DFF optimizations).\n");
 		OptDffOptions opt;
 		opt.nodffe = false;
@@ -949,6 +951,7 @@ struct OptDffPass : public Pass {
 
 		if (did_something)
 			design->scratchpad_set_bool("opt.did_something", true);
+		timer.tick();
 	}
 } OptDffPass;
 

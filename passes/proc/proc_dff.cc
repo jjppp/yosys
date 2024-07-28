@@ -360,7 +360,7 @@ void proc_dff(RTLIL::Module *mod, RTLIL::Process *proc, ConstEval &ce)
 					sync_level ? &sync_level->signal : NULL, proc);
 
 		if (qihe::ENABLE_ARST_VALUE && rstval != RTLIL::SigSpec(RTLIL::State::Sz, sig.size())) {
-			log("ARSTVAL %s.%s %s\n", mod->name.c_str(), log_signal(sig), log_signal(rstval));
+			log("ARSTVAL %s.%s %s\n", mod->name.c_str(), log_signal(sig), log_signal(rstval, false));
 		}
 
 		if (free_sync_level)
