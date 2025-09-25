@@ -204,7 +204,7 @@ void proc_arst(RTLIL::Module *mod, RTLIL::Process *proc, SigMap &assign_map)
 			bool polarity = sync->type == RTLIL::SyncType::STp;
 			if (check_signal(mod, root_sig, sync->signal, polarity)) {
 				if (edge_syncs.size() > 1) {
-					log("Found async reset %s in `%s.%s'.\n", log_signal(sync->signal), mod->name, proc->name);
+					log("Found async reset `%s.%s' in `%s.%s'.\n", mod->name.c_str(), log_signal(sync->signal), mod->name.c_str(), proc->name.c_str());
 					sync->type = sync->type == RTLIL::SyncType::STp ? RTLIL::SyncType::ST1 : RTLIL::SyncType::ST0;
 					arst_syncs.push_back(sync);
 					edge_syncs.erase(it);

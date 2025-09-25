@@ -28,6 +28,8 @@
 USING_YOSYS_NAMESPACE
 PRIVATE_NAMESPACE_BEGIN
 
+static pool<RTLIL::SigSpec> clock_signals{};
+
 RTLIL::SigSpec find_any_lvalue(const RTLIL::Process *proc)
 {
 	RTLIL::SigSpec lvalue;
@@ -86,6 +88,8 @@ void gen_dffsr_complex(RTLIL::Module *mod, RTLIL::SigSpec sig_d, RTLIL::SigSpec 
 
 	log("  created %s cell `%s' with %s edge clock and multiple level-sensitive resets.\n",
 			cell->type.c_str(), cell->name.c_str(), clk_polarity ? "positive" : "negative");
+	SigMap sigmap(mod);
+	clock_signals.insert(sigmap(clk));
 }
 
 void gen_aldff(RTLIL::Module *mod, RTLIL::SigSpec sig_in, RTLIL::SigSpec sig_set, RTLIL::SigSpec sig_out,
@@ -108,6 +112,8 @@ void gen_aldff(RTLIL::Module *mod, RTLIL::SigSpec sig_in, RTLIL::SigSpec sig_set
 
 	log("  created %s cell `%s' with %s edge clock and %s level non-const reset.\n", cell->type, cell->name,
 			clk_polarity ? "positive" : "negative", set_polarity ? "positive" : "negative");
+	SigMap sigmap(mod);
+	clock_signals.insert(sigmap(clk));
 }
 
 void gen_dff(RTLIL::Module *mod, RTLIL::SigSpec sig_in, RTLIL::Const val_rst, RTLIL::SigSpec sig_out,
@@ -132,8 +138,11 @@ void gen_dff(RTLIL::Module *mod, RTLIL::SigSpec sig_in, RTLIL::Const val_rst, RT
 	cell->setPort(ID::Q, sig_out);
 	if (arst)
 		cell->setPort(ID::ARST, *arst);
-	if (!clk.empty())
+	if (!clk.empty()) {
 		cell->setPort(ID::CLK, clk);
+		SigMap sigmap(mod);
+		clock_signals.insert(sigmap(clk));
+	}
 
 	if (!clk.empty())
 		log("  created %s cell `%s' with %s edge clock", cell->type, cell->name, clk_polarity ? "positive" : "negative");
@@ -285,6 +294,7 @@ void proc_dff(RTLIL::Module *mod, RTLIL::Process *proc, ConstEval &ce)
 				sync_level && sync_level->type == RTLIL::SyncType::ST1,
 				sync_edge ? sync_edge->signal : SigSpec(),
 				sync_level ? &sync_level->signal : NULL, proc);
+		log("ARSTVAL %s.%s %s\n", mod->name.c_str(), log_signal(sig), log_signal(rstval, false));
 	}
 }
 
@@ -310,6 +320,16 @@ struct ProcDffPass : public Pass {
 			ConstEval ce(mod);
 			for (auto proc : mod->selected_processes())
 				proc_dff(mod, proc, ce);
+		}
+		for (auto mod : design->modules()) {
+			SigMap sigmap(mod);
+			for (auto &&it: mod->wires_) {
+				const auto &sig = it.second;
+				if (auto sig_name = log_signal(sig); sig_name[0] == '\\' &&
+					clock_signals.find(sigmap(sig)) != clock_signals.end()) {
+					log("Found CLOCK signal %s %s\n", mod->name.c_str(), sig_name);
+				}
+			}
 		}
 	}
 } ProcDffPass;
